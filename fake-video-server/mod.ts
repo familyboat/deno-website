@@ -5,6 +5,8 @@ import {
 } from "./src/mod.ts";
 import { Application, Router } from "./deps.ts";
 
+const NoResults = "No results";
+
 const port = 8080;
 
 const app = new Application();
@@ -28,7 +30,7 @@ router
       }
     }
 
-    ctx.response.body = searchResult;
+    ctx.response.body = searchResult || NoResults;
     await next();
   })
   .get("/videos", async (ctx, next) => {
@@ -41,7 +43,7 @@ router
       const pathname = new URL(remoteUrl).pathname;
       currentVendorService?.setUrl(pathname);
       const videosResult = await currentVendorService?.getVideos();
-      ctx.response.body = videosResult || "";
+      ctx.response.body = videosResult || NoResults;
     }
     await next();
   })
@@ -56,7 +58,7 @@ router
       currentVendorService?.setUrl(pathname);
 
       const videoResult = await currentVendorService?.getVideo();
-      ctx.response.body = videoResult || "";
+      ctx.response.body = videoResult || NoResults;
     }
     await next();
   });
