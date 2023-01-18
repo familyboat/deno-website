@@ -1,7 +1,6 @@
 import { search, getVideos, hdmoliGetVideo, ylwtGetVideo } from "./vendor.ts";
 
 type VendorType = "hdmoli" | "ylwt";
-type HostType = string;
 
 interface Vendor {
   setUrl(fragment: string, isSearching: boolean): void;
@@ -15,10 +14,11 @@ const urlError = new Error("Url is not defined");
 export class VendorService implements Vendor {
   #remoteHost = {
     hdmoli: "https://www.hdmoli.com",
-    ylwt: "https://www.ylwt33.com",
+    ylwt: "https://www.cmqxysg.com/",
   };
   #vendorType: VendorType;
   #url: string | null = null;
+  #body: URLSearchParams | undefined;
 
   constructor(vendorType: VendorType) {
     this.#vendorType = vendorType;
@@ -33,8 +33,10 @@ export class VendorService implements Vendor {
           this.#url = remoteHost + "/search.php?searchword=" + fragment;
           break;
         case "ylwt":
-          this.#url =
-            remoteHost + "/vodsearch/" + fragment + "-------------.html";
+          this.#url = remoteHost + "/vodsearch/-------------.html";
+          this.#body = new URLSearchParams();
+          this.#body.append("wd", fragment);
+          this.#body.append("submit", "");
           break;
         default:
           this.#url = null;
@@ -46,9 +48,10 @@ export class VendorService implements Vendor {
 
   async search(): Promise<string> {
     const url = this.#url;
+    const body = this.#body;
     if (url === null) throw urlError;
     this.#url = null;
-    return await search(url);
+    return await search(url, { body });
   }
 
   async getVideos(): Promise<string> {
