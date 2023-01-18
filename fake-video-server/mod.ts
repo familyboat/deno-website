@@ -1,18 +1,32 @@
-import { search } from "./src/search.ts";
+import {
+  hdmoliVendorService,
+  VendorService,
+  ylwtVendorService,
+} from "./src/mod.ts";
 import { Application, Router } from "./deps.ts";
-import { getVideo, getVideos } from "./src/video.ts";
 
 const port = 8080;
 
 const app = new Application();
 const router = new Router();
 
+const vendorServiceList = [ylwtVendorService, hdmoliVendorService];
+let currentVendorService: VendorService | null = null;
+
 router
   .post("/search", async (ctx, next) => {
     const req = ctx.request;
     const reqBody = req.body({ type: "json" });
     const { keyword } = await reqBody.value;
-    const searchResult = await search(keyword);
+    let searchResult = "";
+    for (const vendorService of vendorServiceList) {
+      vendorService.setUrl(keyword, true);
+      searchResult = await vendorService.search();
+      if (!searchResult.includes("对不起")) {
+        currentVendorService = vendorService;
+        break;
+      }
+    }
 
     ctx.response.body = searchResult;
     await next();
@@ -24,8 +38,10 @@ router
     if (remoteUrl === null) {
       ctx.response.body = "url does not exist";
     } else {
-      const videosResult = await getVideos(new URL(remoteUrl).pathname);
-      ctx.response.body = videosResult;
+      const pathname = new URL(remoteUrl).pathname;
+      currentVendorService?.setUrl(pathname);
+      const videosResult = await currentVendorService?.getVideos();
+      ctx.response.body = videosResult || "";
     }
     await next();
   })
@@ -36,8 +52,11 @@ router
     if (remoteUrl === null) {
       ctx.response.body = "url does not exist";
     } else {
-      const videoResult = await getVideo(new URL(remoteUrl).pathname);
-      ctx.response.body = videoResult;
+      const pathname = new URL(remoteUrl).pathname;
+      currentVendorService?.setUrl(pathname);
+
+      const videoResult = await currentVendorService?.getVideo();
+      ctx.response.body = videoResult || "";
     }
     await next();
   });
