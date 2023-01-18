@@ -24,7 +24,7 @@ router
     for (const vendorService of vendorServiceList) {
       vendorService.setUrl(keyword, true);
       searchResult = await vendorService.search();
-      if (!searchResult.includes("对不起")) {
+      if (searchResult && !searchResult.includes("对不起")) {
         currentVendorService = vendorService;
         break;
       }
