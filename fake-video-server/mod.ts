@@ -4,6 +4,7 @@ import {
   ylwtVendorService,
 } from "./src/mod.ts";
 import { Application, Router } from "./deps.ts";
+import { Clienthost } from "./src/db.ts";
 
 const NoResults = "No results";
 
@@ -16,6 +17,10 @@ const vendorServiceList = [ylwtVendorService, hdmoliVendorService];
 let currentVendorService: VendorService | null = null;
 
 router
+  .get("/", async (ctx) => {
+    const records = await Clienthost.all();
+    ctx.response.body = JSON.stringify(records);
+  })
   .post("/search", async (ctx, next) => {
     const req = ctx.request;
     const reqBody = req.body({ type: "json" });
@@ -65,6 +70,15 @@ router
 
 app.use(router.routes());
 app.use(router.allowedMethods());
+
+app.use(async (ctx, next) => {
+  const req = ctx.request;
+  const clientHost = req.ip;
+  await Clienthost.create({
+    host: clientHost,
+  });
+  await next();
+});
 
 // append access control header
 app.use((ctx) => {
