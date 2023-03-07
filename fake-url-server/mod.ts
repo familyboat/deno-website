@@ -10,6 +10,9 @@ const listener = Deno.listen({
 async function handle(conn: Deno.Conn) {
   for await (const e of Deno.serveHttp(conn)) {
     const url = parseUrl(e.request.url);
+    if (!url) {
+      return e.respondWith(new Response("You should append url"));
+    }
     const resp = await fetch(url);
     return e.respondWith(resp);
   }
