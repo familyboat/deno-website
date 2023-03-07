@@ -3,10 +3,6 @@ function parseUrl(url: string) {
   return u.searchParams.get("url");
 }
 
-const listener = Deno.listen({
-  port: 8080,
-});
-
 async function fetchUrl(url: string, req: Request) {
   return await fetch(new Request(url, {...req}))
 }
@@ -23,6 +19,18 @@ async function handle(conn: Deno.Conn) {
   }
 }
 
-for await (const conn of listener) {
-  handle(conn);
+try {
+  const port = parseInt(Deno.args.at(0) || '') || 8082
+
+  const listener = Deno.listen({
+    port
+  });
+
+  console.log(`Listening on: http://0.0.0.0:${port}`)
+
+  for await (const conn of listener) {
+    handle(conn);
+  }
+} catch (e) {
+  console.log(e)
 }

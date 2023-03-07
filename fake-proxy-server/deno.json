@@ -1,0 +1,6 @@
+{
+    "tasks": {
+        "start": "deno run -A --watch ./mod.ts ./mod.ts",
+        "fmt": "deno fmt ./mod.ts"
+    }
+}
