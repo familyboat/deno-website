@@ -1,8 +1,10 @@
 async function proxy(url: string, req: Request) {
   const proxyUrl = `https://fake-url.deno.dev/?url=${url}`;
   try {
+    console.log(`Proxying url: ${url}`);
     return await fetch(new Request(proxyUrl, { ...req }));
   } catch (e) {
+    console.log(`Failed proxy url: ${url}`);
     return new Response(e, {
       status: 500,
     });
@@ -17,20 +19,18 @@ async function handle(conn: Deno.Conn) {
   }
 }
 
-const port = parseInt(Deno.args[0] || '') || 8081
+const port = parseInt(Deno.args[0] || "") || 8081;
 
 try {
-  const listener = Deno.listen(
-    {
-      port
-    },
-  );
+  const listener = Deno.listen({
+    port,
+  });
 
-  console.log(`Listening on: http://0.0.0.0:${port}`)
+  console.log(`Listening on: http://0.0.0.0:${port}`);
 
   for await (const conn of listener) {
     handle(conn);
   }
-} catch(e) {
-  console.log(e)
+} catch (e) {
+  console.log(e);
 }
