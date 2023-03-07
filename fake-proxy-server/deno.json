@@ -1,6 +1,8 @@
 {
     "tasks": {
         "start": "deno run -A --watch ./mod.ts ./mod.ts",
-        "fmt": "deno fmt ./mod.ts"
+        "fmt": "deno fmt ./mod.ts",
+        "compile:linux": "deno compile -A --target x86_64-unknown-linux-gnu ./mod.ts && mv ./fake-proxy-server ./bin/fake-proxy-server",
+        "compile:windows": "deno compile -A --target x86_64-pc-windows-msvc ./mod.ts && mv ./fake-proxy-server.exe ./bin/fake-proxy-server.exe"
     }
 }
