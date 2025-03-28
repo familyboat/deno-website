@@ -7,10 +7,14 @@ app.use(compress())
 app.get("/", (c) => {
   const url = c.req.query("url");
   if (!url) {
-    return c.text("You should append url");
+    return Promise.resolve(new Response("You must provide a url", { status: 400 }))
   }
 
-  return proxy(url)
+  return proxy(url).then((response) => {
+    response.headers.set("X-Version", "1.0");
+    response.headers.set("X-Proxy", "Hono");
+    return response;
+  })
 })
 
 export default app;
