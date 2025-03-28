@@ -1,9 +1,9 @@
 {
-    "tasks": {
-        "start": "deno serve -A --watch ./mod.ts ./mod.ts",
-        "fmt": "deno fmt ./mod.ts"
-    },
-    "imports": {
-        "@hono/hono": "jsr:@hono/hono@^4.7.5"
-    }
+  "tasks": {
+    "start": "deno serve -A --watch ./mod.ts ./mod.ts",
+    "fmt": "deno fmt ./mod.ts"
+  },
+  "imports": {
+    "@hono/hono": "jsr:@hono/hono@^4.7.5"
+  }
 }
