@@ -7,7 +7,7 @@ app.use(compress());
 app.get("/", (c) => {
   const url = c.req.query("url");
   if (!url) {
-    const res = c.text("URL is required", 400);
+    const res = c.text("Url is required, set url with '?url=<url>'", 400);
     res.headers.set("X-URL-Required", "true");
     return res;
   }
