@@ -1,41 +1,25 @@
-async function getWikiResource(entry: string) {
-  const url = `https://en.wikipedia.org/api/rest_v1/page/pdf/${entry}`;
-  const resp = await fetch(url);
-  let error: string | null = null;
-  if (resp.status !== 200) {
-    error = `The resource you just requested does not exist`;
+import { Hono } from "@hono/hono";
+import { proxy } from "@hono/hono/proxy";
+
+const app = new Hono();
+app.get("/", (c) => {
+  const entry = c.req.query("entry");
+  if (!entry) {
+    const res = c.text(
+      "Entry is required, set entry with '?entry=<entry>'",
+      400,
+    );
+    res.headers.set("X-Entry-Required", "true");
+    return res;
   }
-  return {
-    error,
-    result: resp,
-  };
-}
 
-function parseEntry(url: string) {
-  const u = new URL(url);
-  return u.searchParams.get("entry");
-}
+  return (async () => {
+    const url = `https://en.wikipedia.org/api/rest_v1/page/pdf/${entry}`;
+    const response = await proxy(url);
+    response.headers.set("X-Version", "1.0");
+    response.headers.set("X-Proxy", "Hono");
+    return response;
+  })();
+});
 
-const listener = Deno.listen(
-  {
-    port: 8080,
-  },
-);
-
-async function handle(conn: Deno.Conn) {
-  for await (const e of Deno.serveHttp(conn)) {
-    const entry = parseEntry(e.request.url);
-    if (!entry) {
-      return e.respondWith(new Response(`You should append entry to url`));
-    }
-    const { error, result } = await getWikiResource(entry);
-    if (error) {
-      return e.respondWith(new Response(error));
-    }
-    return e.respondWith(result);
-  }
-}
-
-for await (const conn of listener) {
-  handle(conn);
-}
+export default app;

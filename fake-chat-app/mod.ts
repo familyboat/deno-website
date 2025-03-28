@@ -19,13 +19,14 @@ function broadcast(message: string) {
 function broadcast_usernames() {
   const usernames = [...connectedClients.keys()];
   console.log(
-    "Sending updated username list to all clients: " + JSON.stringify(usernames)
+    "Sending updated username list to all clients: " +
+      JSON.stringify(usernames),
   );
   broadcast(
     JSON.stringify({
       event: "update-users",
       usernames: usernames,
-    })
+    }),
   );
 }
 
@@ -64,7 +65,7 @@ router.get("/start_web_socket", async (ctx) => {
             event: "send-message",
             username: socket.username,
             message: data.message,
-          })
+          }),
         );
         break;
     }
