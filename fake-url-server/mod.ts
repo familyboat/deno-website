@@ -20,8 +20,8 @@ app.get("/", (c) => {
       response.headers.set("X-Proxy", "Hono");
       response.headers.set("Set-Cookie", `proxy-url=${url}`);
       return response;
-    } catch (_e) {
-      return c.text(`Url is malformed: ${url}`);
+    } catch (e) {
+      return c.text(`Proxing ${url} failed. Error ${e}`);
     }
   })();
 });
