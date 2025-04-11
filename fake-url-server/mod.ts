@@ -2,14 +2,24 @@ import { Hono } from "@hono/hono";
 import { compress } from "@hono/hono/compress";
 import { proxy } from "@hono/hono/proxy";
 import { getCookies } from "@std/http/cookie";
+import type { Context } from "@hono/hono";
+import { minify } from "html-minifier-terser";
+
+const root = Deno.cwd();
 
 const app = new Hono();
 app.use(compress());
-app.get("/", (c) => {
+app.get("/", async (c: Context) => {
   const url = c.req.query("url");
   if (!url) {
-    const res = c.text("Url is required, set url with '?url=<url>'", 400);
-    res.headers.set("X-URL-Required", "true");
+    const indexHtml = Deno.readTextFileSync(`${root}/index.html`);
+    const minifiedHtml = await minify(indexHtml, {
+      collapseWhitespace: true,
+      removeComments: true,
+      minifyCSS: true, // 内联 CSS 也压缩
+      minifyJS: true, // 内联 JS 也压缩
+    });
+    const res = c.html(minifiedHtml);
     return res;
   }
 
@@ -26,7 +36,7 @@ app.get("/", (c) => {
   })();
 });
 
-app.get("/*", (c) => {
+app.get("/*", (c: Context) => {
   const cookies = getCookies(c.req.raw.headers);
   const proxyUrl = cookies["proxy-url"];
 
