@@ -4,6 +4,7 @@ import { proxy } from "@hono/hono/proxy";
 import { getCookies } from "@std/http/cookie";
 import type { Context } from "@hono/hono";
 import { minify } from "html-minifier-terser";
+import {join} from "@std/path"
 
 const indexHtml = `<!DOCTYPE html>
 <html lang="en">
@@ -211,12 +212,14 @@ const indexHtml = `<!DOCTYPE html>
 </html>
 `
 
+const dir = import.meta.dirname as string;
+
 const app = new Hono();
 app.use(compress());
 app.get("/", async (c: Context) => {
   const url = c.req.query("url");
   if (!url) {
-    const indexHtml = await Deno.readTextFile('./index.html');
+    const indexHtml = await Deno.readTextFile(join(dir, "index.html"));
     const minifiedHtml = await minify(indexHtml, {
       collapseWhitespace: true,
       removeComments: true,

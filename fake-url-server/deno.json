@@ -6,6 +6,7 @@
   "imports": {
     "@hono/hono": "jsr:@hono/hono@^4.7.5",
     "@std/http": "jsr:@std/http@^1.0.13",
+    "@std/path": "jsr:@std/path@^1.0.8",
     "@types/html-minifier-terser": "npm:@types/html-minifier-terser@^7.0.2",
     "html-minifier-terser": "npm:html-minifier-terser@^7.2.0"
   }
