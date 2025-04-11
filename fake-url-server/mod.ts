@@ -216,6 +216,7 @@ app.use(compress());
 app.get("/", async (c: Context) => {
   const url = c.req.query("url");
   if (!url) {
+    const indexHtml = await Deno.readTextFile('./index.html');
     const minifiedHtml = await minify(indexHtml, {
       collapseWhitespace: true,
       removeComments: true,
