@@ -4,7 +4,7 @@ import { proxy } from "@hono/hono/proxy";
 import { getCookies } from "@std/http/cookie";
 import type { Context } from "@hono/hono";
 import { minify } from "html-minifier-terser";
-import {join} from "@std/path"
+import { join } from "@std/path";
 
 const dir = import.meta.dirname as string;
 
