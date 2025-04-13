@@ -41,6 +41,17 @@
         flex-direction: column;
         gap: 0.5rem;
       }
+
+      #history li {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+      }
+
+      #history li > .url {
+        white-space: wrap;
+        word-break: break-word;
+      }
     </style>
   </head>
   <body>
@@ -102,7 +113,9 @@
           const historyElement = document.getElementById("history");
           history.forEach((item) => {
             const li = document.createElement("li");
-            const textNode = document.createTextNode(item.url);
+            const textElement = document.createElement("span");
+            textElement.className = "url";
+            textElement.textContent = item.url;
             const deleteButton = document.createElement("button");
             deleteButton.textContent = "delete";
             deleteButton.addEventListener("click", function () {
@@ -130,12 +143,10 @@
               visit(item.url);
             });
             visitButton.type = "button";
-            li.appendChild(textNode);
+            li.appendChild(textElement);
             li.appendChild(deleteButton);
             li.appendChild(dateTextNode);
             li.appendChild(visitButton);
-            li.style.display = "flex";
-            li.style.gap = "0.5rem";
 
             historyElement.appendChild(li);
           });
