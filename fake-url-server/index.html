@@ -180,10 +180,12 @@
           const db = event.target.result;
           const transaction = db.transaction(storeName, "readwrite");
           const store = transaction.objectStore(storeName);
-          const reuslt = store.add({ url, now });
+          const dbRequest = store.add({ url, now });
 
-          const li = createHistoryItem({url, now, id: reuslt.result});
-          historyElement.prepend(li);
+          dbRequest.onsuccess = function () {
+            const li = createHistoryItem({url, now, id: dbRequest.result});
+            historyElement.prepend(li);
+          }
         };
       }
 
