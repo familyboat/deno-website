@@ -21,7 +21,7 @@ app.get("/", async (c: Context) => {
       minifyJS: true, // 内联 JS 也压缩
     });
     const res = c.html(minifiedHtml);
-    res.headers.set("X-Homepage", "1.0");
+    res.headers.set("X-Homepage", "1.1");
     return res;
   }
 
