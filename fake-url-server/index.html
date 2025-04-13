@@ -82,36 +82,21 @@
         const realUrl = `${proxyUrl}?url=${url}`;
         location.href = realUrl;
       }
+
+      const historyElement = document.getElementById("history");
     </script>
 
     <script>
-      // indexdb 存储处理
-      const dbName = "fake-url";
-      const dbVersion = 1;
-      const storeName = "history";
-      const dbRequest = indexedDB.open(dbName, dbVersion);
-      dbRequest.onupgradeneeded = function (event) {
-        const db = event.target.result;
-        if (!db.objectStoreNames.contains(storeName)) {
-          db.createObjectStore(storeName, {
-            keyPath: "id",
-            autoIncrement: true,
-          });
-        }
-      };
-      dbRequest.onsuccess = function (event) {
-        const db = event.target.result;
-        const transaction = db.transaction(storeName, "readwrite");
-        const store = transaction.objectStore(storeName);
+      // 访问记录管理
 
-        // 读取历史记录
-        const getAllRequest = store.getAll();
-        getAllRequest.onsuccess = function () {
-          const history = getAllRequest.result;
-          history.sort((a, b) => b.now - a.now);
-          const historyElement = document.getElementById("history");
-          history.forEach((item) => {
-            const li = document.createElement("li");
+      /**
+       * 根据访问记录数据生成相应的dom结构
+       * 
+       * @param {{url: string, now: number, id: number}} item 访问记录数据
+       * @returns {HTMLLIElement}
+       */
+      function createHistoryItem(item) {
+        const li = document.createElement("li");
             const textElement = document.createElement("span");
             textElement.className = "url";
             textElement.textContent = item.url;
@@ -147,6 +132,38 @@
             li.appendChild(dateTextNode);
             li.appendChild(visitButton);
 
+            return li;
+      }
+    </script>
+
+    <script>
+      // indexdb 存储处理
+      const dbName = "fake-url";
+      const dbVersion = 1;
+      const storeName = "history";
+      const dbRequest = indexedDB.open(dbName, dbVersion);
+      dbRequest.onupgradeneeded = function (event) {
+        const db = event.target.result;
+        if (!db.objectStoreNames.contains(storeName)) {
+          db.createObjectStore(storeName, {
+            keyPath: "id",
+            autoIncrement: true,
+          });
+        }
+      };
+      dbRequest.onsuccess = function (event) {
+        const db = event.target.result;
+        const transaction = db.transaction(storeName, "readwrite");
+        const store = transaction.objectStore(storeName);
+
+        // 读取历史记录
+        const getAllRequest = store.getAll();
+        getAllRequest.onsuccess = function () {
+          const history = getAllRequest.result;
+          history.sort((a, b) => b.now - a.now);
+          
+          history.forEach((item) => {
+            const li = createHistoryItem(item);
             historyElement.appendChild(li);
           });
         };
@@ -163,7 +180,10 @@
           const db = event.target.result;
           const transaction = db.transaction(storeName, "readwrite");
           const store = transaction.objectStore(storeName);
-          store.add({ url, now });
+          const reuslt = store.add({ url, now });
+
+          const li = createHistoryItem({url, now, id: reuslt.result});
+          historyElement.prepend(li);
         };
       }
 
@@ -186,7 +206,6 @@
        */
       const urlInputElement = document.getElementById("url");
       const submitButtonElement = document.getElementById("submit");
-      const historyElement = document.getElementById("history");
 
       function onInput() {
         const url = urlInputElement.value;
