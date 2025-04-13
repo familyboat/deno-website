@@ -50,6 +50,12 @@
 
       #history li > .url {
         word-break: break-word;
+        flex: 0 1 100%;
+      }
+
+      #history li > .date {
+        flex: 0 1 100%;
+        text-align: center;
       }
     </style>
   </head>
@@ -107,9 +113,10 @@
               li.remove();
             });
             deleteButton.type = "button";
-            const dateTextNode = document.createTextNode(
-              new Date(item.now).toLocaleString(),
-            );
+            deleteButton.className = "delete";
+            const dateElement = document.createElement("span");
+            dateElement.className = "date";
+            dateElement.textContent = new Date(item.now).toLocaleString();
             const visitButton = document.createElement("button");
             visitButton.textContent = "visit";
             visitButton.addEventListener("click", function () {
@@ -127,9 +134,10 @@
               visit(item.url);
             });
             visitButton.type = "button";
+            visitButton.className = "visit";
             li.appendChild(textElement);
             li.appendChild(deleteButton);
-            li.appendChild(dateTextNode);
+            li.appendChild(dateElement);
             li.appendChild(visitButton);
 
             return li;
