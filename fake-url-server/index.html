@@ -82,7 +82,7 @@
 
     <script>
       // 通用逻辑处理
-      const proxyUrl = "https://fake-url.deno.dev";
+      const proxyUrl = window.location.origin;
 
       function visit(url) {
         const realUrl = `${proxyUrl}?url=${url}`;
